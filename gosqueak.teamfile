@@ -1,0 +1,54 @@
+steelix (
+    uses []
+    url "0.0.0.0:8081"
+    endpoints (
+        /jwtkeypub (
+            methods [GET]
+        )
+        /register (
+            methods [POST]
+        )
+        /logout (
+            methods [POST]
+        )
+        /login (
+            methods [POST]
+        )
+        /apitokens (
+            methods [GET]
+        )
+        /accesstokens (
+            methods [GET]
+        )
+    )
+    jwtInfo (
+        issuerName "steelix"
+        audienceName "steelix"
+    )
+)
+
+klefki (
+    uses [steelix]
+    url "0.0.0.0:8083"
+    endpoints (
+        / (
+            methods [GET, PATCH, DELETE]
+        )
+    )
+    jwtInfo (
+        audienceName "klefki"
+    )
+)
+
+alakazam (
+    uses [steelix]
+    url "0.0.0.0:8082"
+    endpoints (
+        /ws (
+            methods [GET]
+        )
+    )
+    jwtInfo (
+        audienceName "alakazam"
+    )
+)
