@@ -1,1 +1,87 @@
-{"alakazam":{"name":"alakazam","dependents":null,"dependencies":["steelix"],"url":"0.0.0.0:8082","jwtInfo":{"audienceName":"alakazam","issuerName":""},"endpoints":{"/ws":{"methods":["GET"]}}},"klefki":{"name":"klefki","dependents":null,"dependencies":["steelix"],"url":"0.0.0.0:8083","jwtInfo":{"audienceName":"klefki","issuerName":""},"endpoints":{"/":{"methods":["GET","PATCH","DELETE"]}}},"steelix":{"name":"steelix","dependents":["alakazam","klefki"],"dependencies":[],"url":"0.0.0.0:8081","jwtInfo":{"audienceName":"steelix","issuerName":"steelix"},"endpoints":{"/accesstokens":{"methods":["GET"]},"/apitokens":{"methods":["GET"]},"/jwtkeypub":{"methods":["GET"]},"/login":{"methods":["POST"]},"/logout":{"methods":["POST"]},"/register":{"methods":["POST"]}}}}
+{
+   "alakazam": {
+      "name": "alakazam",
+      "url": "0.0.0.0:8082",
+      "dependents": null,
+      "dependencies": [
+         "steelix"
+      ],
+      "jwtInfo": {
+         "audienceName": "alakazam",
+         "issuerName": ""
+      },
+      "endpoints": {
+         "/ws": {
+            "methods": [
+               "GET"
+            ]
+         }
+      }
+   },
+   "klefki": {
+      "name": "klefki",
+      "url": "0.0.0.0:8083",
+      "dependents": null,
+      "dependencies": [
+         "steelix"
+      ],
+      "jwtInfo": {
+         "audienceName": "klefki",
+         "issuerName": ""
+      },
+      "endpoints": {
+         "/": {
+            "methods": [
+               "GET",
+               "PATCH",
+               "DELETE"
+            ]
+         }
+      }
+   },
+   "steelix": {
+      "name": "steelix",
+      "url": "0.0.0.0:8081",
+      "dependents": [
+         "klefki",
+         "alakazam"
+      ],
+      "dependencies": [],
+      "jwtInfo": {
+         "audienceName": "steelix",
+         "issuerName": "steelix"
+      },
+      "endpoints": {
+         "/accesstokens": {
+            "methods": [
+               "GET"
+            ]
+         },
+         "/apitokens": {
+            "methods": [
+               "GET"
+            ]
+         },
+         "/jwtkeypub": {
+            "methods": [
+               "GET"
+            ]
+         },
+         "/login": {
+            "methods": [
+               "POST"
+            ]
+         },
+         "/logout": {
+            "methods": [
+               "POST"
+            ]
+         },
+         "/register": {
+            "methods": [
+               "POST"
+            ]
+         }
+      }
+   }
+}
