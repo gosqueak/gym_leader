@@ -2,13 +2,19 @@ package team
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"os"
+	"io"
 	"regexp"
 	"strings"
 )
 
 func fromTeamFile(fp string) Team {
-	b, err := ioutil.ReadFile(fp)
+	f, err := os.Open(fp)
+	if err != nil {
+		panic(err)
+	}
+
+	b, err := io.ReadAll(f)
 	if err != nil {
 		panic(err)
 	}
