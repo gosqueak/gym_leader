@@ -43,8 +43,8 @@
       "name": "steelix",
       "url": "0.0.0.0:8081",
       "dependents": [
-         "klefki",
-         "alakazam"
+         "alakazam",
+         "klefki"
       ],
       "dependencies": [],
       "jwtInfo": {
