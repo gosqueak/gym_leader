@@ -37,7 +37,7 @@ func fromTeamFile(fp string) Team {
 	for _, service := range team {
 		for _, name := range service.Dependencies {
 			other := team[name]
-			service.uses(other)
+			other.usedBy(service)
 		}
 	}
 

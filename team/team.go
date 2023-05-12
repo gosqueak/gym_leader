@@ -53,11 +53,6 @@ type Service struct {
 	Endpoints    map[string]EndpointInfo `json:"endpoints"`
 }
 
-func (s *Service) uses(other *Service) {
-	s.Dependencies = append(s.Dependencies, other.Name)
-	other.usedBy(s)
-}
-
 func (s *Service) usedBy(other *Service) {
 	s.Dependents = append(s.Dependents, other.Name)
 }
