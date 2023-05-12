@@ -13,34 +13,35 @@ func fromTeamFile(fp string) Team {
 		panic(err)
 	}
 
+	// get string and remove all whitespace and semicolons
 	raw := string(b)
 	re := regexp.MustCompile(`[\s\n\t;]`)
 	raw = re.ReplaceAllString(raw, "")
-	
-	uses := make(map[string][]string)
-	t := make(Team)
 
-	for servName, info := range parseValue(raw) {
+	// init team
+	team := make(Team)
+
+	for name, info := range parseValue(raw) {
+
+		// type assert info and add service name to info
 		info := info.(map[string]any)
-		info["name"] = servName
+		info["name"] = name
 
-		n := servName
+		team[name] = &Service{}
 
-		t[n] = &Service{}
-		uses[n] = info["uses"].([]string)
-		delete(info, "uses")
-
+		// marshall map to JSON then unmarshal into the new Service
 		b, _ := json.Marshal(info)
-		json.Unmarshal(b, t[n])
+		json.Unmarshal(b, team[name])
 	}
 
-	for _, service := range t {
-		for _, name := range uses[service.Name] {
-			service.uses(t[name])
+	for _, service := range team {
+		for _, name := range service.Dependencies {
+			other := team[name]
+			service.uses(other)
 		}
 	}
 
-	return t
+	return team
 }
 
 func parseValue(contents string) map[string]any {

@@ -1,5 +1,5 @@
 steelix (
-    uses []
+    dependencies []
     url "0.0.0.0:8081"
     endpoints (
         /jwtkeypub (
@@ -28,7 +28,7 @@ steelix (
 )
 
 klefki (
-    uses [steelix]
+    dependencies [steelix]
     url "0.0.0.0:8083"
     endpoints (
         / (
@@ -41,7 +41,7 @@ klefki (
 )
 
 alakazam (
-    uses [steelix]
+    dependencies [steelix]
     url "0.0.0.0:8082"
     endpoints (
         /ws (
