@@ -3,6 +3,6 @@ package main
 import "github.com/gosqueak/leader/team"
 
 func main() {
-	team := team.Load("gosqueak.Teamfile")
-	team.SaveJSON("gosqueak.Teamfile.json")
+	team := team.Load("Teamfile")
+	team.SaveJSON("Teamfile.json")
 }

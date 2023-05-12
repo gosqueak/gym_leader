@@ -2,10 +2,21 @@ package team
 
 import (
 	"encoding/json"
+	"io"
 	"io/ioutil"
+	"net/http"
 )
 
 type Team map[string]*Service
+
+func FromJSON(j []byte) (t Team) {
+	err := json.Unmarshal(j, &t)
+	if err != nil {
+		panic(err)
+	}
+
+	return t
+}
 
 func Load(fp string) Team {
 	return fromTeamFile(fp)
@@ -49,4 +60,19 @@ func (s *Service) uses(other *Service) {
 
 func (s *Service) usedBy(other *Service) {
 	s.Dependents = append(s.Dependents, other.Name)
+}
+
+
+func FetchJSON(url string) []byte {
+	r, err := http.Get(url)
+	if err != nil {
+		panic(err)
+	}
+
+	b, err := io.ReadAll(r.Body)
+	if err != nil {
+		panic(err)
+	}
+
+	return b
 }
