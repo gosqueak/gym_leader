@@ -23,6 +23,8 @@ func main() {
 		teamfileFP := os.Args[2]
 		jsonFileFP := os.Args[3]
 
+		fmt.Printf("exporting %v to %v", teamfileFP, jsonFileFP)
+		
 		tm := team.Load(teamfileFP)
 		tm.SaveJSON(jsonFileFP)
 	}
