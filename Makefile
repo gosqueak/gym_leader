@@ -1,6 +1,3 @@
-download_json:
-	go run . download https://raw.githubusercontent.com/gosqueak/leader/main/Teamfile.json ./Teamfile.json
-
 export_json:
 	go run . export ./Teamfile ./Teamfile.json
 
