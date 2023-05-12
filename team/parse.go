@@ -1,93 +1,42 @@
-package main
+package team
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"regexp"
 	"strings"
 )
 
-const teamString = `steelix (
-    uses []
-    url "0.0.0.0:8081"
-    endpoints (
-        /jwtkeypub (
-            methods [GET]
-        )
-        /register (
-            methods [POST]
-        )
-        /logout (
-            methods [POST]
-        )
-        /login (
-            methods [POST]
-        )
-        /apitokens (
-            methods [GET]
-        )
-        /accesstokens (
-            methods [GET]
-        )
-    )
-    jwtInfo (
-        issuerName "steelix"
-        audienceName "steelix"
-    )
-)
+func fromTeamFile(fp string) Team {
+	b, err := ioutil.ReadFile(fp)
+	if err != nil {
+		panic(err)
+	}
 
-klefki (
-    uses [steelix]
-    url "0.0.0.0:8083"
-    endpoints (
-        / (
-            methods [GET, PATCH, DELETE]
-        )
-    )
-    jwtInfo (
-        audienceName "klefki"
-    )
-)
-
-alakazam (
-    uses [steelix]
-    url "0.0.0.0:8082"
-    endpoints (
-        /ws (
-            methods [GET]
-        )
-    )
-    jwtInfo (
-        audienceName "alakazam"
-    )
-)`
-
-func ParseTeamfileString(contents string) Team {
+	raw := string(b)
+	re := regexp.MustCompile(`[\s\n\t;]`)
+	raw = re.ReplaceAllString(raw, "")
+	
+	uses := make(map[string][]string)
 	t := make(Team)
 
-	re := regexp.MustCompile(`[\s\n\t;]`)
-	contents = re.ReplaceAllString(contents, "")
-	services := parseValue(contents)
-
-	uses := make(map[string][]string)
-
-	for servName, info := range services {
+	for servName, info := range parseValue(raw) {
 		info := info.(map[string]any)
 		info["name"] = servName
 
 		n := servName
 
-		t[n] = NewServiceNode(servName)
+		t[n] = &Service{}
 		uses[n] = info["uses"].([]string)
 		delete(info, "uses")
 
-		// TODO this not not properly parse endpoints xausing nil opinter deref error
 		b, _ := json.Marshal(info)
 		json.Unmarshal(b, t[n])
 	}
 
 	for _, service := range t {
 		for _, name := range uses[service.Name] {
-			service.Uses(t[name])
+			service.uses(t[name])
 		}
 	}
 
@@ -103,6 +52,9 @@ func parseValue(contents string) map[string]any {
 
 		if val[0] == '[' {
 			v = strings.Split(val[1:len(val)-1], ",")
+			if v.([]string)[0] == "" {
+				v = []string{}
+			}
 		} else if val[0] == '(' {
 			v = parseValue(val[1 : len(val)-1])
 		} else if val[0] == '"' {
@@ -132,7 +84,7 @@ func splitAttrs(contents string) map[string]string {
 		nameBuilder.Reset()
 		valueBuilder.Reset()
 
-		if valEnd == len(buf) - 1 {
+		if valEnd == len(buf)-1 {
 			break
 		}
 
