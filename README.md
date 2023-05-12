@@ -42,3 +42,16 @@ alakazam (
     )
 )
 ```
+
+# Export a Teamfile to JSON
+```go
+tm := team.Load("./Teamfile")
+tm.SaveJSON("./Teamfile.json")
+```
+
+# Download team config from JSON
+```go
+tm := team.Download(jsonTeamfileURL)
+klefkiConfig := tm["klefi"]
+fmt.Println(klefkiConfig.Endpoints)
+```
