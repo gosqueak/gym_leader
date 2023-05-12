@@ -3,8 +3,8 @@ export_json:
 
 git_push:
 	git checkout main
-	git add .
-	git commit -m "updated teamfile"
+	git add Teamfile Teamfile.json
+	git commit -m "updated teamfiles"
 	git push
 
-deploy: export_json git_push
+deploy_teamfile: export_json git_push
