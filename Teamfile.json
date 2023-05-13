@@ -1,7 +1,7 @@
 {
    "alakazam": {
       "name": "alakazam",
-      "url": "0.0.0.0:8082",
+      "url": "gosqueak-alakazam-1",
       "dependents": null,
       "dependencies": [
          "steelix"
@@ -20,7 +20,7 @@
    },
    "klefki": {
       "name": "klefki",
-      "url": "0.0.0.0:8083",
+      "url": "gosqueak-klefki-1",
       "dependents": null,
       "dependencies": [
          "steelix"
@@ -41,10 +41,10 @@
    },
    "steelix": {
       "name": "steelix",
-      "url": "0.0.0.0:8081",
+      "url": "gosqueak-steelix-1",
       "dependents": [
-         "alakazam",
-         "klefki"
+         "klefki",
+         "alakazam"
       ],
       "dependencies": [],
       "jwtInfo": {

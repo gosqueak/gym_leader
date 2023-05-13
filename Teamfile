@@ -1,6 +1,6 @@
 steelix (
     dependencies []
-    url "0.0.0.0:8081"
+    url "gosqueak-steelix-1"
     endpoints (
         /jwtkeypub (
             methods [GET]
@@ -29,7 +29,7 @@ steelix (
 
 klefki (
     dependencies [steelix]
-    url "0.0.0.0:8083"
+    url "gosqueak-klefki-1"
     endpoints (
         / (
             methods [GET, PATCH, DELETE]
@@ -42,7 +42,7 @@ klefki (
 
 alakazam (
     dependencies [steelix]
-    url "0.0.0.0:8082"
+    url "gosqueak-alakazam-1"
     endpoints (
         /ws (
             methods [GET]
