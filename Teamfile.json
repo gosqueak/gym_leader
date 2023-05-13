@@ -43,8 +43,8 @@
       "name": "steelix",
       "url": "gosqueak-steelix-1",
       "dependents": [
-         "klefki",
-         "alakazam"
+         "alakazam",
+         "klefki"
       ],
       "dependencies": [],
       "jwtInfo": {
