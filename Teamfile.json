@@ -1,8 +1,16 @@
 {
    "alakazam": {
       "name": "alakazam",
-      "url": "gosqueak-alakazam-1",
-      "dependents": null,
+      "url": {
+         "scheme": "http",
+         "domain": "localhost",
+         "port": "8083",
+         "path": ""
+      },
+      "listenAddress": ":8083",
+      "dependents": [
+         "static"
+      ],
       "dependencies": [
          "steelix"
       ],
@@ -20,8 +28,16 @@
    },
    "klefki": {
       "name": "klefki",
-      "url": "gosqueak-klefki-1",
-      "dependents": null,
+      "url": {
+         "scheme": "http",
+         "domain": "localhost",
+         "port": "8082",
+         "path": ""
+      },
+      "listenAddress": ":8082",
+      "dependents": [
+         "static"
+      ],
       "dependencies": [
          "steelix"
       ],
@@ -39,12 +55,46 @@
          }
       }
    },
+   "static": {
+      "name": "static",
+      "url": {
+         "scheme": "http",
+         "domain": "localhost",
+         "port": "8080",
+         "path": ""
+      },
+      "listenAddress": ":8080",
+      "dependents": null,
+      "dependencies": [
+         "steelix",
+         "klefki",
+         "alakazam"
+      ],
+      "jwtInfo": {
+         "audienceName": "alakazam",
+         "issuerName": ""
+      },
+      "endpoints": {
+         "/ws": {
+            "methods": [
+               "GET"
+            ]
+         }
+      }
+   },
    "steelix": {
       "name": "steelix",
-      "url": "gosqueak-steelix-1",
+      "url": {
+         "scheme": "http",
+         "domain": "localhost",
+         "port": "8081",
+         "path": ""
+      },
+      "listenAddress": ":8081",
       "dependents": [
-         "alakazam",
-         "klefki"
+         "static",
+         "klefki",
+         "alakazam"
       ],
       "dependencies": [],
       "jwtInfo": {
