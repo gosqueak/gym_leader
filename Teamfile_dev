@@ -1,0 +1,71 @@
+steelix (
+    dependencies []
+    url (scheme "http" domain "localhost" port "8081")
+    listenAddress ":8080"
+    endpoints (
+        /jwtkeypub (
+            methods [GET]
+        )
+        /register (
+            methods [POST]
+        )
+        /logout (
+            methods [POST]
+        )
+        /login (
+            methods [POST]
+        )
+        /apitokens (
+            methods [GET]
+        )
+        /accesstokens (
+            methods [GET]
+        )
+    )
+    jwtInfo (
+        issuerName "steelix"
+        audienceName "steelix"
+    )
+)
+
+klefki (
+    dependencies [steelix]
+    url (scheme "http" domain "localhost" port "8082")
+    listenAddress ":8080"
+    endpoints (
+        / (
+            methods [GET, PATCH, DELETE]
+        )
+    )
+    jwtInfo (
+        audienceName "klefki"
+    )
+)
+
+alakazam (
+    dependencies [steelix]
+    url (scheme "http" domain "localhost" port "8083")
+    listenAddress ":8080"
+    endpoints (
+        /ws (
+            methods [GET]
+        )
+    )
+    jwtInfo (
+        audienceName "alakazam"
+    )
+)
+
+static (
+    dependencies [steelix, klefki, alakazam]
+    url (scheme "http" domain "localhost" port "8080")
+    listenAddress ":8080"
+    endpoints (
+        /ws (
+            methods [GET]
+        )
+    )
+    jwtInfo (
+        audienceName "alakazam"
+    )
+)
