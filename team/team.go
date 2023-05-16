@@ -3,8 +3,9 @@ package team
 import (
 	"encoding/json"
 	"io"
-	"os"
 	"net/http"
+	"os"
+	"strings"
 )
 
 type Team map[string]*Service
@@ -58,12 +59,13 @@ func (t Team) SaveJSON(fp string) {
 }
 
 type Service struct {
-	Name         string                  `json:"name"`
-	Url          string                  `json:"url"`
-	Dependents   []string                `json:"dependents"`
-	Dependencies []string                `json:"dependencies"`
-	JWTInfo      JWTInfo                 `json:"jwtInfo"`
-	Endpoints    map[string]EndpointInfo `json:"endpoints"`
+	Name          string                  `json:"name"`
+	Url           URL                     `json:"url"`
+	ListenAddress string                  `json:"listenAddress"`
+	Dependents    []string                `json:"dependents"`
+	Dependencies  []string                `json:"dependencies"`
+	JWTInfo       JWTInfo                 `json:"jwtInfo"`
+	Endpoints     map[string]EndpointInfo `json:"endpoints"`
 }
 
 func (s *Service) usedBy(other *Service) {
@@ -77,4 +79,30 @@ type EndpointInfo struct {
 type JWTInfo struct {
 	AudienceName string `json:"audienceName"`
 	IssuerName   string `json:"issuerName"`
+}
+
+type URL struct {
+	Scheme string `json:"scheme"`
+	Domain string `json:"domain"`
+	Port   string `json:"port"`
+	Path   string `json:"path"`
+}
+
+func (u URL) String() string {
+	var builder strings.Builder
+	put := func(s string) { builder.WriteString(s) }
+
+	if u.Scheme != "" {
+		put(u.Scheme + "://")
+	}
+
+	put(u.Domain)
+
+	if u.Port != "" {
+		put(":" + u.Port)
+	}
+
+	put(u.Path)
+
+	return builder.String()
 }
