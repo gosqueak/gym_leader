@@ -1,77 +1,33 @@
 package team
 
 import (
-	"encoding/json"
-	"os"
-	"io"
-	"regexp"
+	"fmt"
 	"strings"
 )
 
-func fromTeamFile(fp string) Team {
-	f, err := os.Open(fp)
-	if err != nil {
-		panic(err)
-	}
-
-	b, err := io.ReadAll(f)
-	if err != nil {
-		panic(err)
-	}
-
-	// get string and remove all whitespace and semicolons
-	raw := string(b)
-	re := regexp.MustCompile(`[\s\n\t;]`)
-	raw = re.ReplaceAllString(raw, "")
-
-	// init team
-	team := make(Team)
-
-	for name, info := range parseValue(raw) {
-
-		// type assert info and add service name to info
-		info := info.(map[string]any)
-		info["name"] = name
-
-		team[name] = &Service{}
-
-		// marshall map to JSON then unmarshal into the new Service
-		b, _ := json.Marshal(info)
-		json.Unmarshal(b, team[name])
-	}
-
-	for _, service := range team {
-		for _, name := range service.Dependencies {
-			other := team[name]
-			other.usedBy(service)
-		}
-	}
-
-	return team
-}
-
-func parseValue(contents string) map[string]any {
-	value := make(map[string]any)
+func parseObject(contents string) map[string]any {
+	values := make(map[string]any)
 	attrs := splitAttrs(contents)
 
-	for k, val := range attrs {
-		var v any
+	for k, v := range attrs {
+		var val any
+		v = v[1 : len(v)-1]
 
-		if val[0] == '[' {
-			v = strings.Split(val[1:len(val)-1], ",")
-			if v.([]string)[0] == "" {
-				v = []string{}
+		if v[0] == '[' { // string array
+			val = strings.Split(v, ",")
+			if val.([]string)[0] == "" { // TODO uhh what?
+				val = []string{}
 			}
-		} else if val[0] == '(' {
-			v = parseValue(val[1 : len(val)-1])
-		} else if val[0] == '"' {
-			v = val[1 : len(val)-1]
+		} else if v[0] == '(' { // object
+			val = parseObject(v)
+		} else if v[0] == '"' { // string
+			val = v
 		}
 
-		value[k] = v
+		values[k] = val
 	}
 
-	return value
+	return values
 }
 
 func splitAttrs(contents string) map[string]string {
@@ -108,15 +64,19 @@ func boundNextValue(contentBuf []byte) (start, end int) {
 		'"': '"',
 	}
 
-	var startChar byte
-	var endChar byte
+	var (
+		startChar byte
+		endChar   byte
+	)
 
 	// find start
 	for i := 0; i < len(contentBuf); i++ {
 		if strings.ContainsAny(string(contentBuf[i]), `[("`) {
 			start = i
+
 			startChar = contentBuf[i]
 			endChar = endChars[startChar]
+
 			break
 		}
 	}
@@ -142,6 +102,10 @@ func boundNextValue(contentBuf []byte) (start, end int) {
 			semaphore++
 		} else if char == endChar {
 			semaphore--
+		}
+
+		if semaphore < 0 {
+			panic(fmt.Errorf("unbalanced %q or %q in Teamfile", startChar, endChar))
 		}
 
 		if semaphore == 0 {
