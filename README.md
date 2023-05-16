@@ -5,10 +5,15 @@ Create a Teamfile with the following syntax. Whitespace and semicolons are compl
 ```txt
 steelix (
     dependencies []
-    url "0.0.0.0:8081"
+    url (scheme "http" domain "localhost" port "8081")
+    listenAddress ":8081"
     endpoints (
         /jwtkeypub (
             methods [GET]
+        )
+        /register (
+            methods [POST]
+        )
     )
     jwtInfo (
         issuerName "steelix"
@@ -18,7 +23,8 @@ steelix (
 
 klefki (
     dependencies [steelix]
-    url "0.0.0.0:8083"
+    url (scheme "http" domain "localhost" port "8082")
+    listenAddress ":8082"
     endpoints (
         / (
             methods [GET, PATCH, DELETE]
@@ -26,19 +32,6 @@ klefki (
     )
     jwtInfo (
         audienceName "klefki"
-    )
-)
-
-alakazam (
-    dependencies [steelix]
-    url "0.0.0.0:8082"
-    endpoints (
-        /ws (
-            methods [GET]
-        )
-    )
-    jwtInfo (
-        audienceName "alakazam"
     )
 )
 ```
