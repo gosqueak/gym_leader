@@ -15,37 +15,36 @@ type Team struct {
 	Teamfile string
 }
 
-func Load(fp string) Team {
+func Load(fp string) (Team, error) {
 	f, err := os.Open(fp)
 	if err != nil {
-		panic(fmt.Errorf("failed to open file: %w", err))
+		return Team{}, fmt.Errorf("failed to open file: %w", err)
 	}
 	defer f.Close()
 
 	b, err := io.ReadAll(f)
 	if err != nil {
-		panic(fmt.Errorf("failed to read file: %w", err))
+		return Team{}, fmt.Errorf("failed to read file: %w", err)
 	}
 
 	return FromTeamfileStr(string(b))
 }
 
-
-func Download(url string) Team {
+func Download(url string) (Team, error) {
 	r, err := http.Get(url)
 	if err != nil {
-		panic(err)
+		return Team{}, err
 	}
 
 	b, err := io.ReadAll(r.Body)
 	if err != nil {
-		panic(err)
+		return Team{}, err
 	}
 
 	return FromTeamfileStr(string(b))
 }
 
-func FromTeamfileStr(s string) Team {
+func FromTeamfileStr(s string) (Team, error) {
 	// get string and remove all whitespace and semicolons
 	re := regexp.MustCompile(`[\s\n\t;]`)
 	stripped := re.ReplaceAllString(s, "")
@@ -59,7 +58,7 @@ func FromTeamfileStr(s string) Team {
 		// type assert service and add service name to service
 		service, ok := v.(map[string]interface{})
 		if !ok {
-			panic(fmt.Errorf("invalid service format for service %q", k))
+			return Team{}, fmt.Errorf("invalid service format for service %q", k)
 		}
 
 		service["name"] = k
@@ -68,10 +67,10 @@ func FromTeamfileStr(s string) Team {
 		// marshall map to JSON then unmarshal into the new Service
 		b, err := json.Marshal(service)
 		if err != nil {
-			panic(fmt.Errorf("failed to marshal service %q to JSON: %w", k, err))
+			return Team{}, fmt.Errorf("failed to marshal service %q to JSON: %w", k, err)
 		}
 		if err := json.Unmarshal(b, team.teamMap[k]); err != nil {
-			panic(fmt.Errorf("failed to unmarshal JSON into service %q: %w", k, err))
+			return Team{}, fmt.Errorf("failed to unmarshal JSON into service %q: %w", k, err)
 		}
 	}
 
@@ -80,7 +79,7 @@ func FromTeamfileStr(s string) Team {
 		service.configureDependencies()
 	}
 
-	return team
+	return team, nil
 }
 
 
@@ -92,32 +91,26 @@ func (t *Team) Member(serviceName string) (s *Member) {
 	return t.teamMap[serviceName]
 }
 
-type teamMap map[string]*Member
-
-func (t teamMap) String() string {
-	return string(t.AsJSON())
-}
-
-func (t teamMap) AsJSON() []byte {
-	b, err := json.MarshalIndent(t, "", "   ")
-	if err != nil {
-		panic(fmt.Errorf("failed to marshal teamMap to JSON: %w", err))
-	}
-	return b
-}
-
-func (t teamMap) SaveJSON(fp string) {
+func (t *Team) SaveJSON(fp string) error {
 	f, err := os.OpenFile(fp, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
-		panic(fmt.Errorf("failed to open file: %w", err))
+		return fmt.Errorf("failed to open file: %w", err)
 	}
 	defer f.Close()
 
-	data := t.AsJSON()
-	if _, err := f.Write(data); err != nil {
-		panic(fmt.Errorf("failed to write JSON data to file: %w", err))
+	b, err := json.MarshalIndent(t, "", "   ")
+	if err != nil {
+		return fmt.Errorf("failed to marshal teamMap to JSON: %w", err)
 	}
+
+	if _, err := f.Write(b); err != nil {
+		return fmt.Errorf("failed to write JSON data to file: %w", err)
+	}
+
+	return nil
 }
+
+type teamMap map[string]*Member
 
 
 type Member struct {

@@ -11,16 +11,17 @@ func parseObject(contents string) map[string]any {
 
 	for k, v := range attrs {
 		var val any
+		startChar := v[0]
 		v = v[1 : len(v)-1]
 
-		if v[0] == '[' { // string array
+		if startChar == '[' { // string array
 			val = strings.Split(v, ",")
 			if val.([]string)[0] == "" { // TODO uhh what?
 				val = []string{}
 			}
-		} else if v[0] == '(' { // object
+		} else if startChar == '(' { // object
 			val = parseObject(v)
-		} else if v[0] == '"' { // string
+		} else if startChar == '"' { // string
 			val = v
 		}
 
