@@ -11,14 +11,20 @@ func main() {
 	mode := os.Args[1]
 
 	switch mode {
+
 	case "export":
 		teamfileFP := os.Args[2]
 		jsonFileFP := os.Args[3]
 
 		fmt.Printf("exporting %v to %v", teamfileFP, jsonFileFP)
 
-		tm := team.Load(teamfileFP)
+		tm, err := team.Load(teamfileFP)
+		if err != nil {
+			panic(err)
+		}
+
 		tm.SaveJSON(jsonFileFP)
+
 	default:
 		fmt.Printf("Error: Unknown mode '%v'\n", mode)
 	}
