@@ -11,7 +11,7 @@ import (
 )
 
 type Team struct {
-	teamMap
+	Map
 	Teamfile string
 }
 
@@ -49,7 +49,7 @@ func FromTeamfileStr(s string) (Team, error) {
 	re := regexp.MustCompile(`[\s\n\t;]`)
 	stripped := re.ReplaceAllString(s, "")
 
-	team := Team{teamMap: make(teamMap), Teamfile: s}
+	team := Team{Map: make(Map), Teamfile: s}
 
 	parsedObject := parseObject(stripped)
 
@@ -62,33 +62,32 @@ func FromTeamfileStr(s string) (Team, error) {
 		}
 
 		service["name"] = k
-		team.teamMap[k] = &Member{}
+		team.Map[k] = &Member{}
 
 		// marshall map to JSON then unmarshal into the new Service
 		b, err := json.Marshal(service)
 		if err != nil {
 			return Team{}, fmt.Errorf("failed to marshal service %q to JSON: %w", k, err)
 		}
-		if err := json.Unmarshal(b, team.teamMap[k]); err != nil {
+		if err := json.Unmarshal(b, team.Map[k]); err != nil {
 			return Team{}, fmt.Errorf("failed to unmarshal JSON into service %q: %w", k, err)
 		}
 	}
 
 	// set up inter-service dependencies
-	for _, service := range team.teamMap {
+	for _, service := range team.Map {
 		service.configureDependencies()
 	}
 
 	return team, nil
 }
 
-
 func (t *Team) String() string {
 	return t.Teamfile
 }
 
 func (t *Team) Member(serviceName string) (s *Member) {
-	return t.teamMap[serviceName]
+	return t.Map[serviceName]
 }
 
 func (t *Team) SaveJSON(fp string) error {
@@ -100,7 +99,7 @@ func (t *Team) SaveJSON(fp string) error {
 
 	b, err := json.MarshalIndent(t, "", "   ")
 	if err != nil {
-		return fmt.Errorf("failed to marshal teamMap to JSON: %w", err)
+		return fmt.Errorf("failed to marshal Map to JSON: %w", err)
 	}
 
 	if _, err := f.Write(b); err != nil {
@@ -110,8 +109,7 @@ func (t *Team) SaveJSON(fp string) error {
 	return nil
 }
 
-type teamMap map[string]*Member
-
+type Map map[string]*Member
 
 type Member struct {
 	Team          Team
@@ -126,8 +124,9 @@ type Member struct {
 
 // Add the Service as a dependent to all depended on services
 func (s *Member) configureDependencies() {
+	s.Dependencies = make([]string, 0)
 	for _, otherName := range s.Dependencies {
-		s.Team.teamMap[otherName].addDependent(s)
+		s.Team.Map[otherName].addDependent(s)
 	}
 }
 

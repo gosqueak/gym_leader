@@ -11,7 +11,7 @@ import (
 )
 
 var teamFileStrings = []string{
-	`s1(dependencies[]url (scheme "s" domain "d" port "p") listenAddress ":8080" endpoints(/(methods[GET,POST])) jwtInfo(issuerName "i" audienceName "a")) s2(dependencies[]url (scheme "s" domain "d" port "p") listenAddress ":8080" endpoints(/(methods[GET,POST])) jwtInfo(issuerName "i" audienceName "a"))`,
+	`s1(dependencies[s2]url (scheme "s" domain "d" port "p") listenAddress ":8080" endpoints(/(methods[GET,POST])) jwtInfo(issuerName "i" audienceName "a")) s2(dependencies[s1]url (scheme "s" domain "d" port "p") listenAddress ":8080" endpoints(/(methods[GET,POST])) jwtInfo(issuerName "i" audienceName "a"))`,
 }
 
 func TestMain(m *testing.M) {
