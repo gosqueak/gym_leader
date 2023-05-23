@@ -10,6 +10,9 @@ import (
 	"strings"
 )
 
+// cache maps teamfile URL to loaded team
+var cache map[string]Team
+
 type Team struct {
 	Map
 	Teamfile string
@@ -31,6 +34,10 @@ func Load(fp string) (Team, error) {
 }
 
 func Download(url string) (Team, error) {
+	if team, ok := cache[url]; ok {
+		return team, nil
+	}
+
 	r, err := http.Get(url)
 	if err != nil {
 		return Team{}, err
@@ -41,7 +48,13 @@ func Download(url string) (Team, error) {
 		return Team{}, err
 	}
 
-	return FromTeamfileStr(string(b))
+	team, err := FromTeamfileStr(string(b))
+
+	if err == nil {
+		cache[url] = team
+	}
+
+	return team, err
 }
 
 func FromTeamfileStr(s string) (Team, error) {
