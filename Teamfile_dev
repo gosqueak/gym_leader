@@ -1,7 +1,7 @@
 steelix (
     dependencies []
     url (scheme "http" domain "localhost" port "8081")
-    listenAddress ":8081"
+    listenAddress "localhost:8081"
     endpoints (
         /jwtkeypub (
             methods [GET]
@@ -31,7 +31,7 @@ steelix (
 klefki (
     dependencies [steelix]
     url (scheme "http" domain "localhost" port "8082")
-    listenAddress ":8082"
+    listenAddress "localhost:8082"
     endpoints (
         / (
             methods [GET, PATCH, DELETE]
@@ -45,7 +45,7 @@ klefki (
 alakazam (
     dependencies [steelix]
     url (scheme "http" domain "localhost" port "8083")
-    listenAddress ":8083"
+    listenAddress "localhost:8083"
     endpoints (
         /ws (
             methods [GET]
@@ -54,10 +54,4 @@ alakazam (
     jwtInfo (
         audienceName "alakazam"
     )
-)
-
-static (
-    dependencies [steelix, klefki, alakazam]
-    url (scheme "http" domain "localhost" port "8080")
-    listenAddress ":8080"
 )
