@@ -10,8 +10,14 @@ import (
 	"strings"
 )
 
-// cache maps teamfile URL to loaded team
-var cache map[string]Team
+// cache a loaded teamfile for subsequent access
+var loadedTeam Team
+var isLoaded bool
+
+func setLoaded(t Team) {
+	loadedTeam = t
+	isLoaded = true
+}
 
 type Team struct {
 	Map
@@ -19,6 +25,10 @@ type Team struct {
 }
 
 func Load(fp string) (Team, error) {
+	if team, ok := Loaded(); ok {
+		return team, nil
+	}
+
 	f, err := os.Open(fp)
 	if err != nil {
 		return Team{}, fmt.Errorf("failed to open file: %w", err)
@@ -30,11 +40,21 @@ func Load(fp string) (Team, error) {
 		return Team{}, fmt.Errorf("failed to read file: %w", err)
 	}
 
-	return FromTeamfileStr(string(b))
+	team, err := FromTeamfileStr(string(b))
+
+	if err == nil {
+		setLoaded(team)
+	}
+
+	return team, err
+}
+
+func Loaded() (t Team, ok bool) {
+	return loadedTeam, isLoaded
 }
 
 func Download(url string) (Team, error) {
-	if team, ok := cache[url]; ok {
+	if team, ok := Loaded(); ok {
 		return team, nil
 	}
 
@@ -51,7 +71,7 @@ func Download(url string) (Team, error) {
 	team, err := FromTeamfileStr(string(b))
 
 	if err == nil {
-		cache[url] = team
+		setLoaded(team)
 	}
 
 	return team, err
